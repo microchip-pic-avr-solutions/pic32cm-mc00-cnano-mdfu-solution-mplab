@@ -1,5 +1,5 @@
 /**
- * © 2025 Microchip Technology Inc. and its subsidiaries.
+ * © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip
  * software and any derivatives exclusively with Microchip products.
@@ -23,7 +23,7 @@
  *
  * @file    com_adapter.c
  * @brief   This is the implementation file for the communication adapter layer using UART.
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  */
 
 /**@misradeviation{@advisory, 8.9} This cannot be followed since the value of the variables
@@ -39,19 +39,19 @@
 #include <stdbool.h>
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @def START_OF_PACKET_BYTE
  * @brief Special character for identifying the start of the frame.
  */
 #define START_OF_PACKET_BYTE    (0x56U)
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @def END_OF_PACKET_BYTE
  * @brief Special character for identifying the end of the frame.
  */
 #define END_OF_PACKET_BYTE      (0x9EU)
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @def ESCAPE_BYTE
  * @brief Special character for identifying an escaped byte in the command data.
  *
@@ -74,27 +74,27 @@ static ftp_special_characters_t ftpSpecialCharacters = {
 };
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @def MaxBufferLength
  * @brief Maximum reception size for each block of data.
  * @note This is set by the initialization function.
  */
 static uint16_t MaxBufferLength = 0U;
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @def isReceiveWindowOpen
  * @brief Static flag used to identify is the start of packet has been processed and bytes are being read into the buffer.
  */
 static bool isReceiveWindowOpen = false;
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @def isReceiveWindowOpen
  * @brief Static flag used to identify if the escape character has been seen and special action must be taken
  * on the next received byte.
  */
 static bool isEscapedByte = false;
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @brief Abstracted UART write function for sending a single byte.
  *
  * @param [in] data - Data byte to be transferred over UART
@@ -104,7 +104,7 @@ static bool isEscapedByte = false;
 static com_adapter_result_t DataSend(uint8_t data);
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @brief Calculate the frame check on the given data buffer
  *
  * @note For more information on the frame check used by the FTP refer to the MDFU protocol document version 1.0.0.
@@ -117,8 +117,8 @@ static uint16_t FrameCheckCalculate(uint8_t * ftpData, uint16_t bufferLength);
 
 static uint16_t FrameCheckCalculate(uint8_t * ftpData, uint16_t bufferLength)
 {
-    uint16_t numBytesChecksummed = 0;
-    uint16_t checksum = 0;
+    uint16_t numBytesChecksummed = 0x0000U;
+    uint16_t checksum = 0x0000U;
 
     while (numBytesChecksummed < (bufferLength))
     {
@@ -128,7 +128,7 @@ static uint16_t FrameCheckCalculate(uint8_t * ftpData, uint16_t bufferLength)
         }
         else
         {
-            checksum += (((uint16_t) (ftpData[numBytesChecksummed])) << 8);
+            checksum += (uint16_t)(((uint16_t)ftpData[numBytesChecksummed]) << 8);
         }
         numBytesChecksummed++;
     }
@@ -145,7 +145,7 @@ static com_adapter_result_t DataSend(uint8_t data)
         // Wait for TX to be ready
     };
     // Call to send the next byte
-    SERCOM1_USART_WriteByte(data);
+    SERCOM1_USART_WriteByte((int)data);
     if (0U != SERCOM1_USART_ErrorGet())
     {
         status = COM_FAIL;
@@ -172,7 +172,7 @@ com_adapter_result_t COM_FrameTransfer(uint8_t *receiveBufferPtr, uint16_t *rece
     {
         if (true == SERCOM1_USART_ReceiverIsReady())
         {
-            nextByte = SERCOM1_USART_ReadByte();
+            nextByte = (uint8_t)SERCOM1_USART_ReadByte();
 
             processResult = (0U == SERCOM1_USART_ErrorGet()) ? COM_PASS : COM_FAIL;
         }
@@ -202,12 +202,12 @@ com_adapter_result_t COM_FrameTransfer(uint8_t *receiveBufferPtr, uint16_t *rece
 
                 // Read FCS from the transfer buffer
                 uint8_t *startOfWord = &receiveBufferPtr[*receiveIndexPtr - FRAME_CHECK_SIZE];
-                uint16_t frameCheckSequence = 0x0000;
+                uint16_t frameCheckSequence = 0x0000U;
                 uint8_t * workPtr = startOfWord;
                 uint8_t lowByte = *workPtr;
                 workPtr++;
                 uint8_t highByte = *workPtr;
-                frameCheckSequence = (uint16_t) ((((uint16_t) highByte) << 8) | lowByte);
+                frameCheckSequence = (uint16_t)((uint16_t)((uint16_t)highByte << 8) | lowByte);
 
 
                 if (fcs == frameCheckSequence)

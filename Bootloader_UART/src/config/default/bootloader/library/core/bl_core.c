@@ -1,5 +1,5 @@
 /**
- * © 2025 Microchip Technology Inc. and its subsidiaries.
+ * © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip
  * software and any derivatives exclusively with Microchip products.
@@ -250,11 +250,11 @@ static bl_result_t BootloaderProcessorUnlock(uint8_t * bufferPtr)
     }
 
     // Read device information from memory
-    uint32_t deviceId = 0x0;
+    uint32_t deviceId = 0x00000000U;
     (void)NVMCTRL_Read(&deviceId, 4U, BL_DEVICE_ID_START_ADDRESS_U);
 
     // Mask the revision number to obtain the device id
-    deviceId &= ~(0xF00);
+    deviceId &= (uint32_t)~(0xF00);
 
     // Compare the device id of the current hardware and the expected id from the file data
     if (deviceId != (uint32_t) metadataPacket.deviceId)
@@ -287,7 +287,7 @@ static void DownloadAreaErase(uint32_t startAddress)
     uint32_t address;
     address = (uint32_t) startAddress;
 
-    while (address < BL_STAGING_IMAGE_END)
+    while (address < (uint32_t)BL_STAGING_IMAGE_END)
     {
         NVMCTRL_RegionUnlock(address);
         while (NVMCTRL_IsBusy() == true)

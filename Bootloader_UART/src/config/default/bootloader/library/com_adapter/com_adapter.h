@@ -1,5 +1,5 @@
 /**
- * © 2025 Microchip Technology Inc. and its subsidiaries.
+ * © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip
  * software and any derivatives exclusively with Microchip products.
@@ -24,7 +24,7 @@
  * @file    com_adapter.h
  * @brief   Contains prototypes and other data types for communication adapter layer.
  *
- * @defgroup com_adapter Communication Adapter
+ * @defgroup com_adapter_uart UART Communication Adapter
  * @brief This layer implements the custom transport layer that is defined by the MDFU protocol.
  */
 /**@misradeviation{@advisory, 2.5} This is a false positive.
@@ -38,7 +38,7 @@
 
 /* cppcheck-suppress misra-c2012-2.5 */
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @def FRAME_CHECK_SIZE
  * @brief Length of the frame check field in bytes.
  */
@@ -46,7 +46,7 @@
 
 /* cppcheck-suppress misra-c2012-2.5 */
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @def FRAME_CHECK_SIZE
  * @brief Length of the frame bytes needed.
  *
@@ -56,7 +56,7 @@
 #define COM_FRAME_BYTE_COUNT (FRAME_CHECK_SIZE)
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @enum com_adapter_result_t
  * @brief Contains codes for the return values of the bootloader communication adapter layer APIs.
  * @var com_adapter_result_t: COM_PASS
@@ -86,7 +86,7 @@ typedef enum
 } com_adapter_result_t;
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @brief Receive or send byte over SERCOM.
  *
  * When receiving this function will push data bytes into the buffer provided until a complete frame is received.
@@ -106,7 +106,7 @@ typedef enum
 com_adapter_result_t COM_FrameTransfer(uint8_t *receiveBufferPtr, uint16_t *receiveIndexPtr);
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @brief Copy and format bytes from the given buffer into the static send buffer using the defined framing format.
  *
  * @note For UART, this function will simply send the bytes out of the peripheral because the communication layer does
@@ -121,7 +121,7 @@ com_adapter_result_t COM_FrameTransfer(uint8_t *receiveBufferPtr, uint16_t *rece
 com_adapter_result_t COM_FrameSet(uint8_t *responseBufferPtr, uint16_t responseLength);
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_uart
  * @brief Performs initialization actions for the communication peripheral and adapter code.
  *
  * @note This function takes the maximum buffer length of the FTP handler so that it

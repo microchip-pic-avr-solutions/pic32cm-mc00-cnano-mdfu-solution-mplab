@@ -245,11 +245,11 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>noID</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>4.60</languageToolchainVersion>
+        <languageToolchainVersion>5.00</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="CMSIS" vendor="ARM" version="6.1.0"/>
+        <pack name="CMSIS" vendor="ARM" version="6.3.0"/>
         <pack name="PIC32CM-MC_DFP" vendor="Microchip" version="1.4.67"/>
       </packs>
       <ScriptingSettings>

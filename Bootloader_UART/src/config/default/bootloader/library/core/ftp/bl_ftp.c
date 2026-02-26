@@ -1,5 +1,5 @@
 /**
- * © 2025 Microchip Technology Inc. and its subsidiaries.
+ * © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip
  * software and any derivatives exclusively with Microchip products.
@@ -616,7 +616,7 @@ static ftp_abort_code_t AbortCodeGet(bl_result_t targetStatus)
 
 static void ParserDataReset(void)
 {
-    ftpReceiveCount = 0;
+    ftpReceiveCount = 0U;
     // Clear the transfer buffer
     void* result = memset(&FTP_RECEIVE_BUFFER, 0x00, MAX_TRANSFER_SIZE);
     (void)result; // Explicitly cast to void to indicate the return value is intentionally unused
@@ -640,7 +640,7 @@ static void ResponseSet(uint8_t * buffer, uint8_t * responsePayload, ftp_respons
     buffer[FTP_BYTE_INDEX] = responseStatus;
     if(responsePayload != NULL){
         // Data Bytes
-        (void)memcpy(&buffer[FILE_DATA_INDEX], responsePayload, responsePayloadLength);
+        (void)memcpy(&buffer[FILE_DATA_INDEX], responsePayload, (uint32_t)responsePayloadLength);
     } else{
         // Do Nothing
     }
@@ -651,7 +651,7 @@ static uint8_t TLVAppend(uint8_t * dataBufferStart, ftp_tlv_t * tlvData)
     // Type & Length
     (void)memcpy(dataBufferStart, (uint8_t*)tlvData, 2U);
     // Data Bytes
-    (void)memcpy(&dataBufferStart[TLV_HEADER_SIZE], tlvData->valueBuffer, tlvData->dataLength);
+    (void)memcpy(&dataBufferStart[TLV_HEADER_SIZE], tlvData->valueBuffer, (uint32_t)tlvData->dataLength);
     return tlvData->dataLength + TLV_HEADER_SIZE;
 }
 
@@ -676,9 +676,9 @@ static void ClientInfoResponseSet(void)
         uint8_t minor;
         uint8_t patch;
     } ftpVersionData = {
-        .major = 0x01,
-        .minor = 0x00,
-        .patch = 0x00,
+        .major = 0x01U,
+        .minor = 0x00U,
+        .patch = 0x00U,
     };
 
     struct ftp_command_timeout_info_t
@@ -688,45 +688,45 @@ static void ClientInfoResponseSet(void)
         uint8_t timeoutValueHigh;
     } generalCommandTimeoutData = {
         .commandCode = 0x00U, // General Command Timeout Code: 0x64 -> 100 dec -> 10 Seconds
-        .timeoutValueLow = 0x64,
+        .timeoutValueLow = 0x64U,
         .timeoutValueHigh = 0x00U,
     };
 
     ftp_tlv_t ftpVersionTLVData = {
-        .dataType = FTP_PROTOCOL_VERSION,
+        .dataType = (uint8_t)FTP_PROTOCOL_VERSION,
         .dataLength = 0x03U,
         .valueBuffer = (uint8_t *) & ftpVersionData
     };
 
     ftp_tlv_t ftpTransferParametersTLVData = {
-        .dataType = FTP_TRANSFER_PARAMETERS,
+        .dataType = (uint8_t)FTP_TRANSFER_PARAMETERS,
         .dataLength = 0x03U,
         .valueBuffer = (uint8_t *) & discoveryData
     };
 
     ftp_tlv_t ftpTimeoutTLVData = {
-        .dataType = FTP_TIMEOUT_INFO,
+        .dataType = (uint8_t)FTP_TIMEOUT_INFO,
         .dataLength = 0x03U,
         .valueBuffer = (uint8_t *) & generalCommandTimeoutData
     };
 
     // Calculate and set the response length
-    ftpResponseLength = (
+    ftpResponseLength = (uint16_t)(
             (uint16_t)ftpVersionTLVData.dataLength +
             (uint16_t)ftpTransferParametersTLVData.dataLength +
             (uint16_t)ftpTimeoutTLVData.dataLength +
             (uint16_t)SEQUENCE_DATA_SIZE +
             (uint16_t)COMMAND_DATA_SIZE +
-            ((uint16_t)TLV_HEADER_SIZE * 3U)
+            (uint16_t)(uint16_t)(uint16_t)((uint16_t)TLV_HEADER_SIZE * 3U)
             );
 
     // Update The Sequence Value
     FTP_RESPONSE_BUFFER[SEQUENCE_BYTE_INDEX] = ftpHelper.currentSequenceNumber;
 
     // Update Status
-    FTP_RESPONSE_BUFFER[FTP_BYTE_INDEX] = FTP_COMMAND_SUCCESS;
+    FTP_RESPONSE_BUFFER[FTP_BYTE_INDEX] = (uint8_t)FTP_COMMAND_SUCCESS;
 
-    uint16_t fileDataOffset = FILE_DATA_INDEX;
+    uint16_t fileDataOffset = (uint16_t)FILE_DATA_INDEX;
 
     // Push each TLV Byte Stream to the buffer
     fileDataOffset += TLVAppend(&(FTP_RESPONSE_BUFFER[fileDataOffset]), &ftpVersionTLVData);
@@ -738,7 +738,7 @@ static void ClientInfoResponseSet(void)
 bl_result_t FTP_Initialize(void)
 {
     // Tell com layer the max size of the buffer it can use
-    com_adapter_result_t comInitStatus = COM_Initialize(MAX_TRANSFER_SIZE);
+    com_adapter_result_t comInitStatus = COM_Initialize((uint16_t)MAX_TRANSFER_SIZE);
     isComBusy = false;
     resetPending = false;
     return (comInitStatus == COM_PASS) ? BL_PASS : BL_FAIL;

@@ -3,19 +3,19 @@
     "category": "com.microchip.ide.project",
     "content": {
         "metaDataVersion": "1.3.0",
-        "name": "com.microchip.mcu8.mplabx.project.pic32cm-mc00-cnano-mdfu-solution-mplab",
-        "version": "1.0.0",
+        "name": "com.microchip.mcu.mplabx.project.pic32cm-mc00-cnano-mdfu-solution-mplab",
+        "version": "1.2.0",
         "displayName": "Microchip Device Firmware Update (MDFU) Bootloader Solution for PIC32CM-MC00 Curiosity Nano Evaluation Kit",
         "projectName": "pic32cm-mc00-cnano-mdfu-solution-mplab",
         "shortDescription": "This repository contains two MPLAB® X projects designed to showcase the MDFU ecosystem on the PIC32CM family.",
         "ide": {
             "name": "MPLAB X",
-            "semverRange": "^6.25.0"
+            "semverRange": "^6.30.0"
         },
         "compiler": [
             {
                 "name": "XC32",
-                "semverRange": "^4.60.0"
+                "semverRange": "^5.00.0"
             }
         ],
         "dfp": {

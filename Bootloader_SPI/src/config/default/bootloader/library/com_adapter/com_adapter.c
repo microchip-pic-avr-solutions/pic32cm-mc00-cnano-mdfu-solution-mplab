@@ -1,5 +1,5 @@
 /**
- * © 2025 Microchip Technology Inc. and its subsidiaries.
+ * © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip
  * software and any derivatives exclusively with Microchip products.
@@ -22,8 +22,8 @@
  * HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
  *
  * @file    com_adapter.c
- * @brief   This is the implementation file for the communication adapter layer using UART.
- * @ingroup com_adapter
+ * @brief   This is the implementation file for the communication adapter layer using SPI.
+ * @ingroup com_adapter_spi
  */
 
 #include "com_adapter.h"
@@ -33,35 +33,35 @@
 #include <stdbool.h>
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_spi
  * @def LENGTH_FIELD_SIZE
  * Holds the size of the length data field.
  */
 #define LENGTH_FIELD_SIZE (2U)
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_spi
  * @def SOP_SEQUENCE_LENGTH
  * Holds the number of bytes that need to be held in the data buffer for each start of frame sequence.
  */
 #define SOP_SEQUENCE_LENGTH (4U)
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_spi
  * @def MAX_RESPONSE_DATA_FIELD
  * Holds the maximum size of a response.
  */
 #define MAX_RESPONSE_DATA_FIELD (25U)
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_spi
  * @def RESPONSE_PACKET_SIZE
  * Holds the size of the response packet.
  */
 #define RESPONSE_PACKET_SIZE (SOP_SEQUENCE_LENGTH + MAX_RESPONSE_DATA_FIELD + FRAME_CHECK_SIZE)
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_spi
  * @def LENGTH_PACKET_SIZE
  * Holds the size of the length packet.
  */
@@ -92,8 +92,8 @@ static uint16_t FrameCheckCalculate(const uint8_t * ftpData, uint16_t bufferLeng
 
 static uint16_t FrameCheckCalculate(const uint8_t * ftpData, uint16_t bufferLength)
 {
-    uint16_t numBytesChecksummed = 0;
-    uint16_t checksum = 0;
+    uint16_t numBytesChecksummed = 0x0000U;
+    uint16_t checksum = 0x0000U;
 
     while (numBytesChecksummed < (bufferLength))
     {
@@ -103,7 +103,7 @@ static uint16_t FrameCheckCalculate(const uint8_t * ftpData, uint16_t bufferLeng
         }
         else
         {
-            checksum += (((uint16_t) (ftpData[numBytesChecksummed])) << 8);
+            checksum += (uint16_t)(((uint16_t)ftpData[numBytesChecksummed]) << 8);
         }
         numBytesChecksummed++;
     }
@@ -271,14 +271,13 @@ com_adapter_result_t COM_FrameTransfer(uint8_t *receiveBufferPtr, uint16_t * rec
 
             // Reads FCS from the receive buffer
             uint8_t *startOfWord = &receiveBufferPtr[readByteCount - FRAME_CHECK_SIZE];
-            uint16_t frameCheckSequence = 0x0000;
+            uint16_t frameCheckSequence = 0x0000U;
 
             const uint8_t * workPtr = startOfWord;
             uint8_t lowByte = *workPtr;
             workPtr++;
             uint8_t highByte = *workPtr;
-            frameCheckSequence = (uint16_t) ((((uint16_t) highByte) << 8) | lowByte);
-
+            frameCheckSequence = (uint16_t)((uint16_t)((uint16_t)highByte << 8) | lowByte);
             if (calculatedFrameCheck == frameCheckSequence)
             {
                 // Set the status to execute the command
@@ -317,9 +316,10 @@ com_adapter_result_t COM_FrameSet(const uint8_t *responseBufferPtr, uint16_t res
         uint16_t hostReadLength = responseLength + FRAME_CHECK_SIZE;
         uint8_t hostReadLengthBytes[2];
         hostReadLengthBytes[0] = (uint8_t)(hostReadLength & 0x00FFU);
-        hostReadLengthBytes[1] = (uint8_t)((hostReadLength >> 8) & 0x00FFU);
+        hostReadLengthBytes[1] = (uint8_t)((uint8_t)(hostReadLength >> 8) & 0xFFU);        
+        
         calculatedFrameCheck = FrameCheckCalculate(hostReadLengthBytes, 2U);
-
+        
         // Loads up the buffer with the length packet data
         for (uint8_t i = 0U; i < SOP_SEQUENCE_LENGTH; i++)
         {

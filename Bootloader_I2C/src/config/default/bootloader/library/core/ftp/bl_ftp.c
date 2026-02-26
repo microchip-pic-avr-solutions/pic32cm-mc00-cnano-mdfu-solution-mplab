@@ -1,5 +1,5 @@
 /**
- * © 2025 Microchip Technology Inc. and its subsidiaries.
+ * © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip
  * software and any derivatives exclusively with Microchip products.
@@ -656,7 +656,7 @@ static void DeviceResetCheck(void)
     {   
         // Device reset delay of 2500 ms
         SYSTICK_TimerStart();
-        SYSTICK_DelayMs(1200);
+        SYSTICK_DelayMs(1200U);
         SYSTICK_TimerStop();
 
     NVIC_SystemReset();
@@ -767,7 +767,7 @@ static void ClientInfoResponseSet(void)
     // Update Status
     FTP_RESPONSE_BUFFER[FTP_BYTE_INDEX] = (uint8_t)FTP_COMMAND_SUCCESS;
 
-    uint16_t fileDataOffset = FILE_DATA_INDEX;
+    uint16_t fileDataOffset = (uint16_t)(FILE_DATA_INDEX);
 
     // Push each TLV Byte Stream to the buffer
     fileDataOffset += TLVAppend(&(FTP_RESPONSE_BUFFER[fileDataOffset]), &ftpVersionTLVData);
@@ -780,7 +780,7 @@ static void ClientInfoResponseSet(void)
 bl_result_t FTP_Initialize(void)
 {
     // Tell com layer the max size of the buffer it can use
-    com_adapter_result_t comInitStatus = COM_Initialize(MAX_TRANSFER_SIZE);
+    com_adapter_result_t comInitStatus = COM_Initialize((uint16_t)(MAX_TRANSFER_SIZE));
     isComBusy = false;
     resetPending = false;
     /* cppcheck-suppress misra-c2012-10.1; false Positive */

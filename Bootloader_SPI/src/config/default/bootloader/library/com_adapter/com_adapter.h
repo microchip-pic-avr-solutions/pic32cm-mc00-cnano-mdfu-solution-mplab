@@ -1,5 +1,5 @@
 /**
- * © 2025 Microchip Technology Inc. and its subsidiaries.
+ * © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip
  * software and any derivatives exclusively with Microchip products.
@@ -24,7 +24,7 @@
  * @file    com_adapter.h
  * @brief   Contains prototypes and other data types for communication adapter layer.
  *
- * @defgroup com_adapter Communication Adapter
+ * @defgroup com_adapter_spi SPI Communication Adapter
  * @brief This layer implements the custom transport layer that is defined by the MDFU Protocol.
  */
 /**@misradeviation{@advisory, 2.5} This is a false positive.
@@ -38,7 +38,7 @@
 
 /* cppcheck-suppress misra-c2012-2.5 */
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_spi
  * @def SERCOM
  * Sets SERCOM to the custom name used in the communication module UI.
  */
@@ -46,7 +46,7 @@
 #define SERCOM SERCOM
 #endif
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_spi
  * @def MULTI_STAGE_RESPONSE
  * Remove and include firmware that is required only when the communication
  * protocol used requires more than one stage to transfer the complete MDFU data packet. (E.g SPI, I2C, etc.)
@@ -59,7 +59,7 @@
 
 /* cppcheck-suppress misra-c2012-2.5 */
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_spi
  * @def FRAME_CHECK_SIZE
  * Length of the frame check field in bytes.
  */
@@ -67,14 +67,14 @@
 
 /* cppcheck-suppress misra-c2012-2.5 */
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_spi
  * @def FRAME_CHECK_SIZE
  * Length of the frame bytes needed.
  */
 #define COM_FRAME_BYTE_COUNT (FRAME_CHECK_SIZE)
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_spi
  * @enum com_adapter_result_t
  * @brief Contains codes for the return values of the bootloader communication adapter layer APIs.
  * @var com_adapter_result_t: COM_PASS
@@ -104,7 +104,7 @@ typedef enum
 } com_adapter_result_t;
 
 /**
- @ingroup com_adapter
+ @ingroup com_adapter_spi
  @brief Receives or sends bytes over SERCOM and pushes data bytes into the provided buffer until a complete frame is received.
  @param [in/out] receiveBufferPtr - Pointer to the buffer provided to SERCOM
  @param [in/out] receiveIndexPtr - Pointer to the number of bytes successfully received by SERCOM
@@ -116,7 +116,7 @@ typedef enum
 com_adapter_result_t COM_FrameTransfer(uint8_t *receiveBufferPtr, uint16_t *receiveIndexPtr);
 
 /**
- @ingroup com_adapter
+ @ingroup com_adapter_spi
  @brief Transfers bytes from the given buffer using the defined framing format.
  @param [in] responseBufferPtr - Pointer to the buffer that needs to be sent
  @param [in] responseLength - Length of the response that needs to be sent
@@ -126,7 +126,7 @@ com_adapter_result_t COM_FrameTransfer(uint8_t *receiveBufferPtr, uint16_t *rece
 com_adapter_result_t COM_FrameSet(const uint8_t *responseBufferPtr, uint16_t responseLength);
 
 /**
- @ingroup com_adapter
+ @ingroup com_adapter_spi
  @brief Performs initialization actions for the communication peripheral and adapter code. 
  @param [in] maximumBufferLength - Maximum length that the COM adapter is allowed to read
  @return @ref COM_PASS - Specified arguments are valid and initialization was successful \n

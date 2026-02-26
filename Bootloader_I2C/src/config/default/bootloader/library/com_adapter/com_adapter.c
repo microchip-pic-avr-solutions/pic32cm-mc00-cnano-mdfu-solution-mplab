@@ -1,5 +1,5 @@
 /**
- * © 2024 Microchip Technology Inc. and its subsidiaries.
+ * © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip
  * software and any derivatives exclusively with Microchip products.
@@ -23,7 +23,7 @@
  *
  * @file    com_adapter.c
  * @brief   This file contains the implementation of the communication adapter layer using Inter-Integrated Circuit (I2C).
- * @ingroup com_adapter
+ * @ingroup com_adapter_i2c
  */
 
 #include "com_adapter.h"
@@ -34,42 +34,42 @@
 #include "../../../peripheral/sercom/i2c_slave/plib_sercom0_i2c_slave.h"
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_i2c
  * @def LENGTH_PREFIX_SIZE
  * Contains the size of the length prefix field.
  */
 #define LENGTH_PREFIX_SIZE      (1U)
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_i2c
  * @def RESPONSE_PREFIX_SIZE
  * Contains the size of the response prefix field.
  */
 #define RESPONSE_PREFIX_SIZE    (1U)
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_i2c
  * @def LENGTH_FIELD_SIZE
  * Contains the size of the length data field.
  */
 #define LENGTH_FIELD_SIZE (2U)
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_i2c
  * @def MAX_RESPONSE_DATA_FIELD
  * Contains the maximum size of a response.
  */
 #define MAX_RESPONSE_DATA_FIELD (25U)
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_i2c
  * @def RESPONSE_OFFSET
  * Contains the offset of the response data buffer where actual client response starts after the length, checksum and prefix fields.
  */
-#define RESPONSE_OFFSET (LENGTH_PREFIX_SIZE + LENGTH_FIELD_SIZE + FRAME_CHECK_SIZE + RESPONSE_PREFIX_SIZE)
+#define RESPONSE_OFFSET (uint16_t)(LENGTH_PREFIX_SIZE + LENGTH_FIELD_SIZE + FRAME_CHECK_SIZE + RESPONSE_PREFIX_SIZE)
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_i2c
  * @enum com_transfer_state_t
  * @brief Contains codes for the return values for the transfer state of the bootloader communication adapter layer.
  * @var com_transfer_state_t: NOTHING_TO_SEND
@@ -105,7 +105,7 @@ com_adapter_result_t COM_Initialize(uint16_t maximumBufferLength)
     if (0U != maximumBufferLength)
     {
         maxBufferLength = maximumBufferLength;
-        SERCOM0_I2C_CallbackRegister((SERCOM_I2C_SLAVE_CALLBACK)&SERCOM_EventHandler,0);
+        SERCOM0_I2C_CallbackRegister((SERCOM_I2C_SLAVE_CALLBACK)&SERCOM_EventHandler,0U);
         result = COM_PASS;
     }
     else
@@ -137,7 +137,7 @@ static bool SERCOM_EventHandler(SERCOM_I2C_SLAVE_TRANSFER_EVENT event)
             {
                 result = true;
                 wasTransactionAcknowledged = true;
-                *comReceiveBufferIndex = 0;
+                *comReceiveBufferIndex = 0x00U;
                 areTooManyBytesInCommand = false;
             }
             else
@@ -242,8 +242,8 @@ static bool SERCOM_EventHandler(SERCOM_I2C_SLAVE_TRANSFER_EVENT event)
 
 static uint16_t FrameChecksumCalculate(uint8_t * ftpData,uint16_t bufferLength)
 {
-    uint16_t numBytesChecksummed = 0;
-    uint16_t checksum = 0;
+    uint16_t numBytesChecksummed = 0x0000U;
+    uint16_t checksum = 0x0000U;
 
     while (numBytesChecksummed < (bufferLength))
     {
@@ -253,7 +253,7 @@ static uint16_t FrameChecksumCalculate(uint8_t * ftpData,uint16_t bufferLength)
         }
         else
         {
-            checksum += (((uint16_t)(ftpData[numBytesChecksummed])) << 8);
+            checksum += (uint16_t)(((uint16_t)(ftpData[numBytesChecksummed])) << 8);
         }
         numBytesChecksummed++;
     }
@@ -295,7 +295,7 @@ com_adapter_result_t COM_FrameTransfer(uint8_t *receiveBufferPtr,uint16_t *recei
                 uint8_t lowByte = *workPtr;
                 workPtr++;
                 uint8_t highByte = *workPtr;
-                frameCheckSequence = (uint16_t)((((uint16_t)highByte) << 8) | lowByte);
+                frameCheckSequence = (uint16_t)((uint16_t)((uint16_t)highByte << 8) | lowByte);
 
                 // Check if calculated checksum and received checksum are equal
                 if (calcuatedFrameChecksum == frameCheckSequence)
@@ -354,13 +354,17 @@ com_adapter_result_t COM_FrameSet(uint8_t *responseBufferPtr, uint16_t responseL
         comResponseBuffer[5] = (uint8_t)'R';
         
         // Copy the response into the COM static buffer and set length
-        for (uint16_t i = RESPONSE_OFFSET;i < (responseLength + RESPONSE_OFFSET);i++)
+        uint16_t limit = (uint16_t)responseLength + (uint16_t)RESPONSE_OFFSET;
+        for (uint16_t i = RESPONSE_OFFSET; i < limit; i++)
         {
             comResponseBuffer[i] = responseBufferPtr[i - RESPONSE_OFFSET];
         }
-
+        
         comResponseBuffer[responseLength + RESPONSE_OFFSET] = (uint8_t)dataChecksum & 0x00FFU;
-        comResponseBuffer[responseLength + RESPONSE_OFFSET + 1U] = (uint8_t)(dataChecksum >> 8);
+        
+        uint16_t highByte = (uint16_t)((uint32_t)responseLength + (uint32_t)RESPONSE_OFFSET + 1U);
+        
+        comResponseBuffer[highByte] = (uint8_t)(dataChecksum >> 8);
         
         comResponseBufferIndex = 0U;
         result = COM_PASS;

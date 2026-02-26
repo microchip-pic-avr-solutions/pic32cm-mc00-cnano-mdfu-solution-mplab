@@ -1,5 +1,5 @@
 /**
- * © 2025 Microchip Technology Inc. and its subsidiaries.
+ * © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip
  * software and any derivatives exclusively with Microchip products.
@@ -91,7 +91,7 @@ static bl_result_t CRC32_Validate(uint32_t startAddress, uint32_t length, uint32
 {
     bl_result_t result = BL_FAIL;
     uint32_t crc = CRC_SEED;
-    uint32_t refCRC = 0;
+    uint32_t refCRC = 0x00000000U;
 
     CRC32_Calculate(startAddress, length, &crc);
     (void)NVMCTRL_Read(&refCRC, 4U, crcAddress);

@@ -1,5 +1,5 @@
 /**
- * © 2025 Microchip Technology Inc. and its subsidiaries.
+ * © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip
  * software and any derivatives exclusively with Microchip products.
@@ -115,7 +115,7 @@ static bl_result_t CRC32_Validate(uint32_t startAddress, uint32_t length, uint32
 bl_result_t BL_ImageVerify(void)
 {
     // Verify the app area
-    bl_result_t verificationStatus = CRC32_Validate(BL_APPLICATION_START_ADDRESS, BL_IMAGE_PARTITION_SIZE - BL_HASH_DATA_SIZE, 0x1FFFC);
+    bl_result_t verificationStatus = CRC32_Validate(BL_APPLICATION_START_ADDRESS, BL_IMAGE_PARTITION_SIZE - BL_HASH_DATA_SIZE, 0x1FFFCU);
 
     return verificationStatus;
 }

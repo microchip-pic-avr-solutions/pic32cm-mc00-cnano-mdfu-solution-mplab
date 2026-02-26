@@ -12,11 +12,10 @@ mcc_version: 5.6.2
 mcc_core_version: 5.8.2
 content_manager_version: 6.2.0-0xpress-test-v2
 is_mcc_offline: false
-is_using_prerelease_versions: true
+is_using_prerelease_versions: false
 mcc_content_registries: https://registry.npmjs.org/
 device_library: {library_class: com.microchip.mcc.harmony.Harmony3Library, name: Bundled,
   version: Bundled}
 packs: {name: PIC32CM-MC_DFP, version: 1.4.67}
 modules:
 - {name: csp, type: HARMONY, version: v3.22.5}
-- {name: CMSIS_5, type: HARMONY, version: 5.9.0}

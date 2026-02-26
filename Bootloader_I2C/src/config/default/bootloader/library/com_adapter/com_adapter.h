@@ -1,5 +1,5 @@
 /**
- * © 2024 Microchip Technology Inc. and its subsidiaries.
+ * © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip 
  * software and any derivatives exclusively with Microchip products. 
@@ -22,7 +22,7 @@
  * HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
  *
  * @file    com_adapter.h
- * @defgroup com_adapter Communication Adapter
+ * @defgroup com_adapter_i2c I2C Communication Adapter
  * @brief This layer implements the custom transport layer that is defined by the MDFU protocol.
  */
  /**@misradeviation{@advisory, 2.5} This is a false positive.
@@ -34,7 +34,7 @@
 #include <stdint.h>
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_i2c
  * @def MULTI_STAGE_RESPONSE
  * Removes and includes firmware that is required only when the communication
  * protocol used requires more than one stage to transfer the complete MDFU data packet. (e.g., Serial Peripheral Interface (SPI), I2C, etc.)
@@ -47,7 +47,7 @@
 
 /* cppcheck-suppress misra-c2012-2.5 */
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_i2c
  * @def FRAME_CHECK_SIZE
  * @brief Length of the frame check field in bytes.
  */
@@ -55,7 +55,7 @@
 
 /* cppcheck-suppress misra-c2012-2.5 */
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_i2c
  * @def FRAME_CHECK_SIZE
  * @brief Length of the frame bytes needed.
  * 
@@ -65,7 +65,7 @@
 #define COM_FRAME_BYTE_COUNT (FRAME_CHECK_SIZE)
 
 /**
- * @ingroup com_adapter
+ * @ingroup com_adapter_i2c
  * @enum com_adapter_result_t
  * @brief Contains codes for the return values of the bootloader communication adapter layer APIs.
  * @var com_adapter_result_t: COM_PASS
@@ -95,7 +95,7 @@ typedef enum
 } com_adapter_result_t;
 
 /**
- @ingroup com_adapter
+ @ingroup com_adapter_i2c
  @brief Receives or sends bytes over Serial Communication (SERCOM) and pushes data bytes into the provided buffer until a complete frame is received.
  @param [in/out] receiveBufferPtr - Pointer to the buffer provided to SERCOM
  @param [in/out] receiveIndexPtr - Pointer to the number of bytes successfully received by SERCOM
@@ -107,7 +107,7 @@ typedef enum
 com_adapter_result_t COM_FrameTransfer(uint8_t *receiveBufferPtr, uint16_t *receiveIndexPtr);
 
 /**
- @ingroup com_adapter
+ @ingroup com_adapter_i2c
  @brief Transfers bytes from the given buffer using the defined framing format.
  @param [in] responseBufferPtr - Pointer to the buffer that needs to be sent
  @param [in] responseLength - Length of the response that needs to be sent
@@ -117,7 +117,7 @@ com_adapter_result_t COM_FrameTransfer(uint8_t *receiveBufferPtr, uint16_t *rece
 com_adapter_result_t COM_FrameSet(uint8_t *responseBufferPtr, uint16_t responseLength);
 
 /**
- @ingroup com_adapter
+ @ingroup com_adapter_i2c
  @brief Performs initialization actions for the communication peripheral and adapter code. 
  @param [in] maximumBufferLength - Maximum length that the COM adapter is allowed to read
  @return @ref COM_PASS - Specified arguments were valid and initialization was successful \n
